@@ -8,4 +8,4 @@ This repository contains examples of XSLT to convert MEI files into:
 
 The first two folders contain examples on how to build the XSLT step by step.
 
-All examples were provided by Perry Roland. These were divided into steps and accompanied by a PowerPoint presentation to upload in this repository.
+**All encoded material was provided by Perry Roland**, and divided into steps by Martha Thomae (together with the accompaning slides).
