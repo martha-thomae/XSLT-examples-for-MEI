@@ -30,8 +30,6 @@
         <ul>
           <xsl:for-each select="*:identifier">
             <li>
-              <!--<xsl:value-of select="."/>
-              <xsl:value-of select="concat('(', @label, ')')"/>-->
               <xsl:value-of select="concat(., ' (', @label, ')')"/>
             </li>
           </xsl:for-each>
