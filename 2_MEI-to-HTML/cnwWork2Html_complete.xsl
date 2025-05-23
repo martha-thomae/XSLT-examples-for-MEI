@@ -15,9 +15,7 @@
     <html>
       <head>
         <title>
-          <xsl:value-of select="
-              *:title[@xml:lang = 'en']
-              [position() = 1]"/>
+          <xsl:value-of select="*:title[@xml:lang = 'en'][position() = 1]"/>
         </title>
       </head>
       <body>
@@ -63,8 +61,6 @@
       <xsl:apply-templates/>
     </p>
   </xsl:template>
-
-  <xsl:template match="*:work/*:identifier"> </xsl:template>
 
   <xsl:template match="*:work/*:history">
     <h2>History</h2>
