@@ -94,7 +94,7 @@
       </xsl:if>
       <xsl:if test="*:title[@level = 'm']">
         <xsl:if test="*:title[@level = 'a']">
-          <xsl:text>in </xsl:text>
+          <xsl:text>In </xsl:text>
         </xsl:if>
         <xsl:value-of select="*:title[@level = 'm']"/>
       </xsl:if>
