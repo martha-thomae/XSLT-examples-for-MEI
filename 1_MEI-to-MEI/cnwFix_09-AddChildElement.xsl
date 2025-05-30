@@ -78,7 +78,7 @@
           <name>MEC 2025 XPath/XSLT tutorial</name>
         </respStmt>
         <changeDesc>
-          <p>Adjustments for MEI 5.1 validation</p>
+          <p>Adjustments for MEI 5.0 validation</p>
         </changeDesc>
       </change>
     </xsl:copy>
