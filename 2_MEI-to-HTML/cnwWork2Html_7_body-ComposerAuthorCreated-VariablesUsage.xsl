@@ -53,10 +53,12 @@
       />-->
     </xsl:variable>
     <h2>
+      <!-- Value of the variable (which is its local name with the first letter capitalized) -->
       <xsl:value-of select="$heading2name"/>
     </h2>
     <p>
-      <xsl:apply-templates/><!--Default: copy text-->
+      <!--Default: copy text (of the matched node) -->
+      <xsl:apply-templates/>
     </p>
   </xsl:template>
 

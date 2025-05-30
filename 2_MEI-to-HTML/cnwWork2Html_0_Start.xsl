@@ -7,6 +7,7 @@
     omit-xml-declaration="no"/>
   <xsl:strip-space elements="*"/>
 
+  <!-- Start template -->
   <xsl:template match="/">
     <xsl:apply-templates/>
   </xsl:template>

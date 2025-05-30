@@ -6,11 +6,12 @@
   <xsl:output method="xml" encoding="UTF-8" indent="yes" media-type="text/xml" omit-xml-declaration="no"/>
   <xsl:strip-space elements="*"/>
 
+  <!-- Start Template -->
   <xsl:template match="/">
     <xsl:apply-templates/>
   </xsl:template>
 
-  <!-- Force @meiversion to '5.0' -->
+  <!-- Change an attribute's value: Force @meiversion to '5.0' -->
   <xsl:template match="@meiversion">
     <xsl:attribute name="meiversion">5.0</xsl:attribute>
   </xsl:template>
@@ -18,27 +19,25 @@
   <!-- Remove empty attributes -->
   <xsl:template match="@*[normalize-space(.) = '']"/>
 
-  <!-- Remove empty elements -->
-  <xsl:template match="*[normalize-space(.) = '']"/>
-
-  <!-- Copy <address> from <respStmt> to <pubPlace> -->
+  <!-- Move element -->
+  <!-- Step 1: Copy <address> from <respStmt> to <pubPlace> -->
   <xsl:template match="*:fileDesc/*:pubStmt[*:respStmt/*:corpName/*:address]">
     <xsl:copy>
+      <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
       <pubPlace>
         <xsl:copy-of select="*:respStmt/*:corpName/*:address"/>
       </pubPlace>
     </xsl:copy>
   </xsl:template>
-
-  <!-- Delete <address> from <corpName> -->
+  <!-- Step 2: Delete <address> from <corpName> -->
   <xsl:template match="*:corpName[*:address]">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="*[not(local-name() eq 'address')]"/>
     </xsl:copy>
   </xsl:template>
-
+  
   <!-- Replace "article" with "chapter" when genre = "book" -->
   <xsl:template match="*:bibl/*:genre[. = 'article']">
     <xsl:if test="../*:genre = 'book'">
@@ -48,7 +47,7 @@
       </genre>
     </xsl:if>
   </xsl:template>
-
+  
   <!-- When <contributor> contains more than one <persName>,
     create role-based elements -->
   <xsl:template match="*:contributor[count(*:persName) > 1]">
@@ -59,7 +58,7 @@
       </xsl:element>
     </xsl:for-each>
   </xsl:template>
-
+  
   <!-- Add type="main" to work titles without @type -->
   <xsl:template match="*:work/*:title[not(@type)]">
     <xsl:copy>
@@ -68,7 +67,7 @@
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
-
+  
   <!-- Add <change> to <revisionDesc> -->
   <xsl:template match="*:revisionDesc">
     <xsl:copy>
@@ -85,7 +84,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- DEFAULT TEMPLATE -->
+  <!-- Copy Template: DEFAULT TEMPLATE -->
   <xsl:template match="element() | text() | processing-instruction() | comment() | @*">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>

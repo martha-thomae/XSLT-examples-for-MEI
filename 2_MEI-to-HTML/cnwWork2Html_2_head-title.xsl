@@ -7,10 +7,12 @@
     omit-xml-declaration="no"/>
   <xsl:strip-space elements="*"/>
 
+  <!-- Apply template to work -->
   <xsl:template match="/">
     <xsl:apply-templates select="//*:work"/>
   </xsl:template>
   
+  <!-- Template that matches work -->
   <xsl:template match="*:work">
     <html>
       <head>
