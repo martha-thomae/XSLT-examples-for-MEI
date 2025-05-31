@@ -6,7 +6,7 @@
     omit-xml-declaration="no" standalone="no"/>
   <xsl:strip-space elements="*"/>
 
-  <!-- input file name-->
+  <!-- Input file name-->
   <xsl:variable name="inputFilename">
     <xsl:value-of select="tokenize(base-uri(.), '/')[last()]"/>
   </xsl:variable>
@@ -15,6 +15,8 @@
     <xsl:text>MEI Census (</xsl:text>
     <xsl:value-of select="$inputFilename"/>
     <xsl:text>)&#xa;&#xa;</xsl:text>
+
+    <!-- Simple counts -->
     <xsl:text>Number of measures: </xsl:text>
     <xsl:value-of select="count(//*:measure)"/>
     <xsl:text>&#xa;Number of empty measures: </xsl:text>
@@ -30,7 +32,55 @@
     <xsl:value-of select="count(//*:note) - count(//*:tie) - count(//*:note[@tie])"/>
     <xsl:text>&#xa;Number of noteheads: </xsl:text>
     <xsl:value-of select="count(//*:note)"/>
+    <xsl:text>&#xa;Number of rests: </xsl:text>
+    <xsl:value-of select="count(//*[matches(local-name(), 'rest|mRest')])"/>
+    <xsl:text>&#xa;Number of ties: </xsl:text>
+    <xsl:value-of select="count(//*:tie) + count(//*[@tie])"/>
+    <xsl:text>&#xa;Number of beams: </xsl:text>
+    <xsl:value-of select="count(//*:beam) + count(//*:beamSpan)"/>
+    <!-- beamSpan not accounted for! -->
+    <xsl:text>&#xa;Number of beamed chords: </xsl:text>
+    <xsl:value-of select="count(//*:chord[ancestor::*:beam | @beam])"/>
+    <xsl:text>&#xa;Number of beamed notes: </xsl:text>
+    <xsl:value-of select="count(//*:note[ancestor::*:beam | @beam])"/>
+    <xsl:text>&#xa;Number of beamed rests: </xsl:text>
+    <xsl:value-of select="count(//*:rest[ancestor::*:beam | @beam])"/>
 
+    <!-- To find the maximum number of staves and layers: 
+      Variables containing a mini-xml document in order to apply 
+      sorting and find the minimum and maximum number of something -->
+    <xsl:variable name="measuresStaves">
+      <xsl:for-each select="//*:measure">
+        <xsl:sort select="count(*:staff)"/>
+        <measure>
+          <xsl:attribute name="staves">
+            <xsl:value-of select="count(*:staff)"/>
+          </xsl:attribute>
+        </measure>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="measuresLayers">
+      <xsl:for-each select="//*:measure">
+        <xsl:sort select="count(descendant::*:layer)"/>
+        <measure>
+          <xsl:attribute name="layers">
+            <xsl:value-of select="count(descendant::*:layer)"/>
+          </xsl:attribute>
+        </measure>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <!-- Results -->
+    <xsl:text>&#xa;Maximum number of staves: </xsl:text>
+    <xsl:value-of select="$measuresStaves/measure[last()]/@staves"/>
+    <xsl:text>&#xa;Maximum number of layers: </xsl:text>
+    <xsl:value-of select="$measuresLayers/measure[last()]/@layers"/>
+
+    <!-- To find shortest and longest durations: 
+      Variables containing a mini-xml document in order to apply 
+      sorting and find the minimum and maximum number of something
+      (also use of 'replace' function to facilitate the sorting) -->
     <xsl:variable name="sortedDurations">
       <xsl:for-each select="//*:note[@dur] | //*:chord[@dur]">
         <xsl:sort select="
@@ -67,11 +117,16 @@
       </xsl:for-each>
     </xsl:variable>
 
+    <!-- Results -->
     <xsl:text>&#xa;Longest note duration: </xsl:text>
     <xsl:value-of select="$sortedDurations/*:dur[1]/@dur"/>
     <xsl:text>&#xa;Shortest note duration: </xsl:text>
     <xsl:value-of select="$sortedDurations/*:dur[last()]/@dur"/>
 
+    <!-- To find lowest and highest pitch: 
+      Variables containing a mini-xml document in order to apply 
+      sorting and find the minimum and maximum number of something
+      (also use of 'replace' function to facilitate the sorting) -->
     <xsl:variable name="noteHeadsWithPitchClass">
       <xsl:for-each select="//*:note[@pname]">
         <note>
@@ -130,6 +185,7 @@
       </xsl:for-each>
     </xsl:variable>
 
+    <!-- Cascading sorting -->
     <xsl:variable name="sortedNotes">
       <xsl:for-each select="$noteHeadsWithPitchClass/*:note">
         <xsl:sort select="@pnum" data-type="number"/>
@@ -139,52 +195,13 @@
       </xsl:for-each>
     </xsl:variable>
 
-    <xsl:variable name="measuresStaves">
-      <xsl:for-each select="//*:measure">
-        <xsl:sort select="count(*:staff)"/>
-        <measure>
-          <xsl:attribute name="staves">
-            <xsl:value-of select="count(*:staff)"/>
-          </xsl:attribute>
-        </measure>
-      </xsl:for-each>
-    </xsl:variable>
-
-    <xsl:variable name="measuresLayers">
-      <xsl:for-each select="//*:measure">
-        <xsl:sort select="count(descendant::*:layer)"/>
-        <measure>
-          <xsl:attribute name="layers">
-            <xsl:value-of select="count(descendant::*:layer)"/>
-          </xsl:attribute>
-        </measure>
-      </xsl:for-each>
-    </xsl:variable>
-
+    <!-- Results -->
     <xsl:text>&#xa;Highest note: </xsl:text>
     <xsl:value-of
       select="concat($sortedNotes/*:note[last()]/@pname, replace(replace(replace($sortedNotes/*:note[last()]/@accid, 's', '♯'), 'f', '♭'), 'n', '♮'), $sortedNotes/*:note[last()]/@oct)"/>
     <xsl:text>&#xa;Lowest note: </xsl:text>
     <xsl:value-of
       select="concat($sortedNotes/*:note[1]/@pname, replace(replace(replace($sortedNotes/*:note[1]/@accid, 's', '♯'), 'f', '♭'), 'n', '♮'), $sortedNotes/*:note[1]/@oct)"/>
-    <xsl:text>&#xa;Number of rests: </xsl:text>
-    <xsl:value-of select="count(//*[matches(local-name(), 'rest|mRest')])"/>
-    <xsl:text>&#xa;Number of ties: </xsl:text>
-    <xsl:value-of select="count(//*:tie) + count(//*[@tie])"/>
-    <xsl:text>&#xa;Number of beams: </xsl:text>
-    <xsl:value-of select="count(//*:beam) + count(//*:beamSpan)"/>
-    <!-- beamSpan not accounted for! -->
-    <xsl:text>&#xa;Number of beamed chords: </xsl:text>
-    <xsl:value-of select="count(//*:chord[ancestor::*:beam | @beam])"/>
-    <xsl:text>&#xa;Number of beamed notes: </xsl:text>
-    <xsl:value-of select="count(//*:note[ancestor::*:beam | @beam])"/>
-    <xsl:text>&#xa;Number of beamed rests: </xsl:text>
-    <xsl:value-of select="count(//*:rest[ancestor::*:beam | @beam])"/>
-    <xsl:text>&#xa;Maximum number of staves: </xsl:text>
-    <xsl:value-of select="$measuresStaves/measure[last()]/@staves"/>
-    <xsl:text>&#xa;Maximum number of layers: </xsl:text>
-    <xsl:value-of select="$measuresLayers/measure[last()]/@layers"/>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
-
 </xsl:stylesheet>
