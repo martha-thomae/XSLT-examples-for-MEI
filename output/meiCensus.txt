@@ -1,0 +1,20 @@
+MEI Census (Bach-JS_Ein_feste_Burg.mei)
+
+Number of measures: 16
+Number of empty measures: 0
+Number of barlines: 16
+Number of chords: 0
+Number of notes: 260
+Number of noteheads: 261
+Number of rests: 0
+Number of ties: 1
+Number of beams: 47
+Number of beamed chords: 0
+Number of beamed notes: 95
+Number of beamed rests: 0
+Maximum number of staves: 2
+Maximum number of layers: 4
+Longest note duration: 2
+Shortest note duration: 16
+Highest note: d♮5
+Lowest note: d♮2
